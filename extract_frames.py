@@ -2,17 +2,22 @@ import cv2
 import os
 import re
 
-def getFileName(file):
-    m = re.search('(.*).jpg')
+
+def getFileName(fname):
+    m = re.search('(.*).jpg', fname)
     if m:
         return m.group(1)
-    return f"{math.random()}error"
+    return "error"
 
-directory = os.fsencode("/training-data")
-for file in os.listdir(directory):
-    newDir = f"{getFileName(file)}"
-    os.mkdir(newDir)
-    img = cv2.imread(file)
-    for r in range(0,img.shape[0],30):
-        for c in range(0,img.shape[1],30):
-            cv2.imwrite(f"{newDir}/img{r}_{c}.png",img[r:r+30, c:c+30,:])
+
+ar = 216
+directory = os.fsencode("./training-data").decode()
+for filename in os.listdir(directory):
+    if filename.endswith(".jpg"):
+        newDir = f"{getFileName(filename)}"
+        img = cv2.imread(f"{directory}/{filename}")
+        os.mkdir(f"./{directory}/{newDir}")
+        for r in range(0, img.shape[0], ar):
+            for c in range(0, img.shape[1], ar):
+                cv2.imwrite(f"./{directory}/{newDir}/img{newDir}_{r}_{c}.jpg",
+                            img[r:r+ar, c:c+ar, :])
