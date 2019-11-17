@@ -9,15 +9,6 @@ def create_window(win_name):
     cv2.resizeWindow(win_name, 600, 600)
 
 
-def display_lines(frame, lines):
-    if lines is not None:
-        for line in lines[:100]:
-            x1, y1, x2, y2 = line.reshape(4)
-            cv2.line(img=frame, pt1=(x1, y1), pt2=(
-                x2, y2), color=(255, 0, 0), thickness=3)
-    return frame
-
-
 def filter_contour(contour):
     curve_len = cv2.arcLength(contour, True)
     approx = cv2.approxPolyDP(contour, 0.05 * curve_len, True)
