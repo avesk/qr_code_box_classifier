@@ -18,18 +18,6 @@ def display_lines(frame, lines):
     return frame
 
 
-def detect_shape(contour):
-    curve_len = cv2.arcLength(contour, True)
-    approx = cv2.approxPolyDP(contour, 0.05 * curve_len, True)
-    ar_tol = .1
-    if len(approx) == 4:
-        x, y, w, h = cv2.boundingRect(approx)
-        ar = w / float(h)
-        if ar >= 1.0-ar_tol and ar <= 1.0+ar_tol and h > 5:
-            return (x, y)
-    return -1, -1
-
-
 def filter_contour(contour):
     curve_len = cv2.arcLength(contour, True)
     approx = cv2.approxPolyDP(contour, 0.05 * curve_len, True)
@@ -44,17 +32,11 @@ def filter_contour(contour):
 win_name = 'frame'
 create_window(win_name)
 
-filepath = 'training-data/25.jpg'
-# filepath = 'training-data/4.jpg'
-# filepath = 'training-data/47.jpg'
+filepath = 'training-data/no_qr_code/img27_648_648.jpg'
 
 
 frame = cv2.imread(filepath)
 gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-# thresh = cv2.adaptiveThreshold(
-#     src=gray, maxValue=255, adaptiveMethod=cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-#     thresholdType=cv2.THRESH_BINARY, blockSize=5, C=5
-# )
 ret, thresh = cv2.threshold(gray, 120, 255, cv2.THRESH_BINARY)
 
 contours, h = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
@@ -64,8 +46,6 @@ for cont in contours:
         print(cont)
         cv2.drawContours(frame, [cont], 0, (0, 255, 0), 2)
         print(x, y)
-    # cv2.drawContours(frame, [cont], 0, (0, 255, 0), 2)
-# cv2.imshow(win_name, thresh)
 cv2.imshow(win_name, frame)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
