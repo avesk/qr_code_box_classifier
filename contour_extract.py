@@ -47,11 +47,11 @@ thresh = cv2.adaptiveThreshold(
 contours, h = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 for cont in contours:
     x, y = detect_shape(cont)
-    if x > -1:
-        print(cont)
-        cv2.drawContours(frame, [cont], 0, (0, 255, 0), 2)
-        print(x, y)
-
+    # if x > -1:
+    #     print(cont)
+    #     cv2.drawContours(frame, [cont], 0, (0, 255, 0), 2)
+    #     print(x, y)
+    cv2.drawContours(frame, [cont], 0, (0, 255, 0), 2)
 # cv2.imshow(win_name, thresh)
 cv2.imshow(win_name, frame)
 cv2.waitKey(0)
