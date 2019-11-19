@@ -3,6 +3,9 @@ import numpy as np
 import imutils
 import os
 from sklearn.naive_bayes import GaussianNB
+from sklearn.model_selection import KFold
+from sklearn.metrics import confusion_matrix
+import random
 
 
 def filter_contour(contour):
@@ -41,6 +44,13 @@ def feature_extract(cls, directory, documents):
     return documents
 
 
+def shuffle_data(a, b):
+    c = list(zip(a, b))
+    random.shuffle(c)
+    a, b = zip(*c)
+    return np.array(a), np.array(b)
+
+
 def prep_data():
     documents = {"pos": [], "neg": []}
 
@@ -61,15 +71,27 @@ def prep_data():
     return X, Y
 
 
-def classify(X, Y, alg):
+def train(X, Y, clsf):
+    splits = 10
+    kf = KFold(n_splits=splits)
+
     score = 0
-    clsf = alg()
-    clsf.fit(X, Y)
-    score += clsf.score(X, Y)
-    return score
+    conf_matrix = np.zeros((2, 2))
+    for train_index, test_index in kf.split(X):
+        X_train, X_test = X[train_index], X[test_index]
+        Y_train, Y_test = Y[train_index], Y[test_index]
+
+        # classifier
+        clsf.fit(X_train, Y_train)
+        score += clsf.score(X_test, Y_test)
+        Y_pred = clsf.predict(X_test)
+        conf_matrix += confusion_matrix(Y_test, Y_pred)
+    return score / splits, conf_matrix
 
 
 X, Y = prep_data()
-score = classify(X, Y, GaussianNB)
+X, Y = shuffle_data(X, Y)
+score, conf_matrix = train(X, Y, GaussianNB())
 
 print(score)
+print(conf_matrix)
