@@ -28,20 +28,40 @@ def flatten_contour(contour, row_len):
     return flattened_contour
 
 
+def euclidian(coord1, coord2):
+    return ((coord1[0] - coord2[0])**2 + (coord1[1] - coord2[1])**2)**(1/2.0)
+
+
+def euclidian_cont(contour):
+    if contour.shape[0] < 2:
+        return [0.0]
+    eu_cont = []
+    for i in range(contour.shape[0]-1):
+        eu_cont.append(euclidian(contour[i][0], contour[i+1][0]))
+    return eu_cont
+
+
 def feature_extract(cls, directory, documents):
     row_len = 216
     for filename in os.listdir(directory):
-        doc = []
+        doc = [0.0, 0.0]
         frame = cv2.imread(f"{directory}/{filename}")
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         ret, thresh = cv2.threshold(gray, 120, 255, cv2.THRESH_BINARY)
 
         contours, h = cv2.findContours(
             thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-        for cont in contours:
+
+        areas = []
+        for i, cont in enumerate(contours):
             x, y = filter_contour(cont)
             if x > -1:
-                doc += flatten_contour(cont, row_len)
+                areas.append(cv2.contourArea(cont))
+        if len(areas) > 0:
+            mean = np.mean(areas)
+            std = np.std(areas)
+            doc[0] = mean
+            doc[1] = std
         documents[cls].append(doc)
     return documents
 
@@ -58,8 +78,9 @@ documents = feature_extract("neg", directory, documents)
 
 pos_x = np.asarray(documents["pos"])
 neg_x = np.asarray(documents["neg"])
-# print(pos_x[0])
 
+# print(pos_x)
+# print(neg_x)
 # print(len(pos_x))
 # print(len(neg_x))
 
@@ -69,10 +90,11 @@ Y = np.concatenate((np.zeros(len(pos_x)), np.ones(len(neg_x))))
 # print(len(X))
 # print(len(Y))
 # print(Y)
-# score = 0
+score = 0
 gnb = GaussianNB()
 gnb.fit(X, Y)
-# score += gnb.score(X_test, Y_test)
-# Y_pred = gnb.predict(X[0])
+score += gnb.score(X, Y)
+Y_pred = gnb.predict(X[0].reshape(1, -1))
 
-# print(Y_pred)
+print(Y_pred)
+print(score)
