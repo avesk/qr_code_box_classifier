@@ -16,31 +16,6 @@ def filter_contour(contour):
     return (-1, -1)
 
 
-def coord_to_index(x, y, row_len):
-    return float(x*row_len + y)
-
-
-def flatten_contour(contour, row_len):
-    flattened_contour = []
-    for cont in contour:
-        x, y = cont[0][0], cont[0][1]
-        flattened_contour.append(coord_to_index(x, y, row_len))
-    return flattened_contour
-
-
-def euclidian(coord1, coord2):
-    return ((coord1[0] - coord2[0])**2 + (coord1[1] - coord2[1])**2)**(1/2.0)
-
-
-def euclidian_cont(contour):
-    if contour.shape[0] < 2:
-        return [0.0]
-    eu_cont = []
-    for i in range(contour.shape[0]-1):
-        eu_cont.append(euclidian(contour[i][0], contour[i+1][0]))
-    return eu_cont
-
-
 def feature_extract(cls, directory, documents):
     row_len = 216
     for filename in os.listdir(directory):
@@ -66,35 +41,35 @@ def feature_extract(cls, directory, documents):
     return documents
 
 
-documents = {"pos": [], "neg": []}
+def prep_data():
+    documents = {"pos": [], "neg": []}
 
-# Positives
-directory = "./training-data/contains_qr_code"
-documents = feature_extract("pos", directory, documents)
+    # Positives
+    directory = "./training-data/contains_qr_code"
+    documents = feature_extract("pos", directory, documents)
 
-# Negatives
-directory = "./training-data/no_qr_code"
-documents = feature_extract("neg", directory, documents)
+    # Negatives
+    directory = "./training-data/no_qr_code"
+    documents = feature_extract("neg", directory, documents)
 
-pos_x = np.asarray(documents["pos"])
-neg_x = np.asarray(documents["neg"])
+    pos_x = np.asarray(documents["pos"])
+    neg_x = np.asarray(documents["neg"])
 
-# print(pos_x)
-# print(neg_x)
-# print(len(pos_x))
-# print(len(neg_x))
+    X = np.concatenate((pos_x, neg_x))
+    Y = np.concatenate((np.zeros(len(pos_x)), np.ones(len(neg_x))))
 
-X = np.concatenate((pos_x, neg_x))
-Y = np.concatenate((np.zeros(len(pos_x)), np.ones(len(neg_x))))
+    return X, Y
 
-# print(len(X))
-# print(len(Y))
-# print(Y)
-score = 0
-gnb = GaussianNB()
-gnb.fit(X, Y)
-score += gnb.score(X, Y)
-Y_pred = gnb.predict(X[0].reshape(1, -1))
 
-print(Y_pred)
+def classify(X, Y, alg):
+    score = 0
+    clsf = alg()
+    clsf.fit(X, Y)
+    score += clsf.score(X, Y)
+    return score
+
+
+X, Y = prep_data()
+score = classify(X, Y, GaussianNB)
+
 print(score)
