@@ -6,6 +6,7 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.model_selection import KFold
 from sklearn.metrics import confusion_matrix
 import random
+from sklearn import svm
 
 
 def filter_contour(contour):
@@ -91,7 +92,17 @@ def train(X, Y, clsf):
 
 X, Y = prep_data()
 X, Y = shuffle_data(X, Y)
+
+# Naive Bayes
 score, conf_matrix = train(X, Y, GaussianNB())
 
+print("GNB")
+print(score)
+print(conf_matrix)
+
+# SVM
+score, conf_matrix = train(X, Y, svm.SVC(gamma='scale'))
+
+print("SVM")
 print(score)
 print(conf_matrix)
