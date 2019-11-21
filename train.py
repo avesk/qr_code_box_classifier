@@ -4,6 +4,7 @@ import os
 from sklearn.naive_bayes import GaussianNB
 from sklearn.model_selection import KFold
 from sklearn.metrics import confusion_matrix
+from sklearn.linear_model import LogisticRegression
 import random
 from sklearn import svm
 from sklearn import tree
@@ -100,6 +101,13 @@ X, Y = shuffle_data(X, Y)
 score, conf_matrix = train(X, Y, GaussianNB())
 
 print("GNB")
+print(score)
+print(conf_matrix)
+
+#Logistic Regression
+score, conf_matrix = train(X, Y, LogisticRegression(solver= 'liblinear' ))
+
+print("Logistic")
 print(score)
 print(conf_matrix)
 
