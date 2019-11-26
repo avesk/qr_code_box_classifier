@@ -97,6 +97,15 @@ def train(X, Y, clsf):
 X, Y = prep_data()
 X, Y = shuffle_data(X, Y)
 
+#prints out data for csv file
+for i in range(len(X)):
+    for j in range(len(X[i])):
+        print(X[i][j], end=", ")
+    if Y[i] == 0.0:
+        print("yes")
+    else:
+        print("no")
+
 # Naive Bayes
 score, conf_matrix = train(X, Y, GaussianNB())
 
