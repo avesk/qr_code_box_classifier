@@ -1,8 +1,7 @@
 # Computer Vision QR Code Classification
 
 Authors:
-Avery Kushner
-Derek Siemens
+Avery Kushner, Derek Siemens
 
 ## Background
 Applications of automating package pickup and deliveries exist across multiple industries, from moving freight in warehouses, to delivering medical and emergency supply kits to rural areas. This project focuses on moving medical supplies from airstrip depots to rural areas, where ground travel is slow and infeasible. A UGV can be leveraged to enter a depot area, collect a QR code labelled package, and return to a UAV such as a drone to be flown to a drop off zone.
